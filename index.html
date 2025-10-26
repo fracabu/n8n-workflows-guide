@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida N8N Workflows - Tutorial Completi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>N8N Workflows</h1>
+                <p>Guide Complete</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#intro" class="nav-link active" data-section="intro">Introduzione</a></li>
+                    <li><a href="#rag-agent" class="nav-link" data-section="rag-agent">Agente RAG</a></li>
+                    <li class="submenu">
+                        <a href="#rag-fase1" class="nav-link sub" data-section="rag-fase1">Fase 1: Ingestion</a>
+                    </li>
+                    <li class="submenu">
+                        <a href="#rag-fase2" class="nav-link sub" data-section="rag-fase2">Fase 2: Query</a>
+                    </li>
+                    <li class="submenu">
+                        <a href="#rag-riuso" class="nav-link sub" data-section="rag-riuso">Riuso/Altra Doc</a>
+                    </li>
+                    <li class="submenu">
+                        <a href="#rag-produzione" class="nav-link sub" data-section="rag-produzione">Produzione</a>
+                    </li>
+                    <li class="submenu">
+                        <a href="#rag-troubleshooting" class="nav-link sub" data-section="rag-troubleshooting">Troubleshooting</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Cerca nella guida...">
+            </div>
+
+            <!-- Introduzione -->
+            <section id="intro" class="content-section active">
+                <h2>Guida N8N Workflows</h2>
+                <p class="intro-text">
+                    Benvenuto nella guida completa per creare workflow avanzati in N8N senza scrivere codice.
+                    In questa guida troverai tutorial passo-passo con esempi pratici.
+                </p>
+                <div class="info-box">
+                    <h3>Cos'è N8N?</h3>
+                    <p>
+                        N8N è una piattaforma di automazione workflow che permette di connettere diversi servizi
+                        e creare automazioni complesse attraverso un'interfaccia visuale, senza necessità di programmare.
+                    </p>
+                </div>
+                <div class="examples-grid">
+                    <div class="example-card" onclick="navigateToSection('rag-agent')">
+                        <div class="card-icon">🤖</div>
+                        <h3>Agente RAG</h3>
+                        <p>Crea un agente AI che risponde usando i tuoi documenti</p>
+                    </div>
+                    <div class="example-card coming-soon">
+                        <div class="card-icon">📧</div>
+                        <h3>Email Automation</h3>
+                        <p>Prossimamente...</p>
+                    </div>
+                    <div class="example-card coming-soon">
+                        <div class="card-icon">📊</div>
+                        <h3>Data Processing</h3>
+                        <p>Prossimamente...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Agente RAG -->
+            <section id="rag-agent" class="content-section">
+                <div class="section-header">
+                    <h2>🤖 Agente RAG (Retrieval Augmented Generation)</h2>
+                    <span class="difficulty-badge intermediate">Intermedio</span>
+                </div>
+                <p class="section-intro">
+                    Creare un agente RAG funzionante da zero su N8N, senza scrivere codice, si articola in due fasi principali.
+                    L'obiettivo è costruire un agente in grado di cercare informazioni accurate per rispondere alle domande,
+                    utilizzando le fonti che gli fornirai.
+                </p>
+
+                <div class="info-box" style="margin-top: 2rem; background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; border: none;">
+                    <h3 style="color: white;">🎉 Soluzione 100% Gratuita con Google Gemini</h3>
+                    <p>
+                        Questa guida ti mostrerà come creare un agente RAG completamente <strong>GRATUITO</strong> utilizzando:
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>✅ <strong>Google Gemini Embeddings</strong> - Modello di embedding gratuito</li>
+                        <li>✅ <strong>Dimensione vettore: 768</strong></li>
+                        <li>✅ <strong>Pinecone Free Tier</strong> - Database vettoriale gratuito</li>
+                        <li>✅ <strong>Google Gemini LLM</strong> - Modello linguistico gratuito</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-weight: 600; background: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 5px;">
+                        💡 Non serve OpenAI! Tutto completamente gratuito!
+                    </p>
+                </div>
+
+                <div class="workflow-overview">
+                    <h3>Panoramica del Workflow</h3>
+                    <div class="phases">
+                        <div class="phase">
+                            <div class="phase-number">1</div>
+                            <h4>Preparazione e Inserimento</h4>
+                            <p>Allenare l'agente sui documenti</p>
+                        </div>
+                        <div class="phase-arrow">→</div>
+                        <div class="phase">
+                            <div class="phase-number">2</div>
+                            <h4>Interrogazione e Risposta</h4>
+                            <p>Creare l'interfaccia di chat</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FASE 1 -->
+            <section id="rag-fase1" class="content-section">
+                <h2>📥 FASE 1: Preparazione e Inserimento dei Documenti (Ingestion)</h2>
+                <p class="phase-description">
+                    Questa fase serve ad "allenare" l'agente sulle fonti di conoscenza, spezzettando i documenti
+                    e salvandoli in un database vettoriale.
+                </p>
+
+                <div class="info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                    <h3 style="color: white; margin-top: 0;">🎯 Struttura del Workflow - Fase 1</h3>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; margin-top: 1rem;">
+                        <pre style="color: white; font-family: monospace; overflow-x: auto; margin: 0;">
+┌─────────────────────┐
+│  Manual Trigger     │ ← Inizio del workflow
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Google Drive       │ ← Scarica il documento
+│  (Download File)    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐      ┌──────────────────────┐
+│ Pinecone Vector     │◄─────│ Gemini Embeddings    │
+│ Store (Insert)      │      │ (ai_embedding)       │
+└──────────┬──────────┘      └──────────────────────┘
+           │
+           │                  ┌──────────────────────┐
+           └──────────────────│ Default Data Loader  │
+                              │ (Binary, ai_document)│
+                              └──────────────────────┘
+                        </pre>
+                    </div>
+                    <p style="margin-top: 1rem; margin-bottom: 0;">
+                        <strong>📌 Nodi necessari:</strong> 5 nodi totali (1 trigger + 4 processing nodes)
+                    </p>
+                </div>
+
+                <div class="step">
+                    <h3>Step 1.1: Impostazione del Trigger e Download del File</h3>
+                    <ol>
+                        <li>
+                            <strong>Avvia il Workflow:</strong> All'interno di N8N, aggiungi il primo node (nodo)
+                            come <span class="highlight">Manual Trigger</span> (Trigger Manuale).
+                        </li>
+                        <li>
+                            <strong>Scarica il Documento:</strong> Aggiungi un nodo <span class="highlight">Google Drive</span>.
+                            <ul>
+                                <li><strong>Connessione:</strong> Devi creare una nuova Credential (credenziale)
+                                per connettere N8N al tuo account Google Drive. (Questo processo richiede circa 5 minuti).</li>
+                                <li><strong>Selezione File:</strong> Carica il documento che vuoi usare (deve essere in formato
+                                testuale o PDF) su Google Drive. Poi, nel nodo Google Drive di N8N, seleziona il file specifico
+                                che vuoi scaricare (ad esempio, <code>Marsi Info</code>).</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Esecuzione di Test:</strong> Esegui questo step per assicurarti che il file venga
+                            scaricato correttamente. È consigliato eseguire ogni step (nodo) in questo modo, in modo che
+                            i dati siano disponibili per i nodi successivi.
+                        </li>
+                    </ol>
+                    <div class="tip-box">
+                        <strong>💡 Suggerimento:</strong> Testa ogni nodo singolarmente per verificare che funzioni
+                        correttamente prima di procedere al successivo.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>Step 1.2: Configurazione del Database Vettoriale (Pinecone)</h3>
+                    <p>Il database vettoriale è dove i pezzi di documento verranno salvati in base al loro significato.</p>
+
+                    <div class="info-box">
+                        <strong>🌐 Cosa faremo in questo step:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Creare un account gratuito su Pinecone</li>
+                            <li>Generare una API Key per N8N</li>
+                            <li>Creare un indice custom per Gemini Embeddings</li>
+                        </ul>
+                    </div>
+
+                    <h4 style="margin-top: 2rem; color: #667eea;">A) Aggiungi il nodo in N8N</h4>
+                    <ol>
+                        <li>
+                            <strong>Aggiungi il Vector Store:</strong> Nel tuo workflow N8N, aggiungi il nodo
+                            <span class="highlight">Pinecone Vector Store</span>.
+                            <br><em style="color: #636e72; font-size: 0.9em;">Non configurarlo ancora, prima dobbiamo preparare Pinecone.</em>
+                        </li>
+                    </ol>
+
+                    <h4 style="margin-top: 2rem; color: #667eea;">B) Crea Account e API Key su Pinecone</h4>
+                    <ol start="2">
+                        <li>
+                            <strong>Vai su Pinecone:</strong> Apri il browser e vai su
+                            <a href="https://www.pinecone.io" target="_blank" style="color: #ea4b71; font-weight: 600;">
+                                https://www.pinecone.io
+                            </a>
+                        </li>
+                        <li>
+                            <strong>Registrati o Accedi:</strong>
+                            <ul>
+                                <li>Se non hai un account: clicca su <strong>"Sign Up"</strong> e crea un account gratuito</li>
+                                <li>Se hai già un account: clicca su <strong>"Log In"</strong></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Crea una API Key:</strong> Una volta loggato nella dashboard di Pinecone:
+                            <ul>
+                                <li>Vai nella sezione <strong>"API Keys"</strong> nel menu laterale</li>
+                                <li>Clicca su <strong>"Create API Key"</strong></li>
+                                <li>Dai un nome alla chiave (es. <code>n8n-workflow</code>)</li>
+                                <li><strong>IMPORTANTE:</strong> Copia subito la chiave API e salvala in un posto sicuro
+                                    (non potrai più visualizzarla dopo)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Configura la Credential in N8N:</strong>
+                            <ul>
+                                <li>Torna in N8N, nel nodo <strong>Pinecone Vector Store</strong></li>
+                                <li>Clicca su <strong>"Create New Credential"</strong></li>
+                                <li>Incolla la tua API Key di Pinecone</li>
+                                <li>Salva la credential</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4 style="margin-top: 2rem; color: #667eea;">C) Crea l'Indice Custom per Gemini</h4>
+                    <ol start="6">
+                        <li>
+                            <strong>Vai alla sezione Indexes:</strong> Nella dashboard di Pinecone, clicca su <strong>"Indexes"</strong> nel menu laterale
+                        </li>
+                        <li>
+                            <strong>Crea nuovo indice:</strong> Clicca su <strong>"Create Index"</strong>
+                        </li>
+                        <li>
+                            <strong>Configurazione dell'Indice - IMPORTANTE:</strong>
+                            <div style="background: #fff9e6; border-left: 4px solid #fdcb6e; padding: 1rem; margin-top: 0.5rem; border-radius: 5px;">
+                                <strong>📋 Compila i campi come segue:</strong>
+                                <ul style="margin: 0.5rem 0 0 1.5rem;">
+                                    <li><strong>Index Name:</strong> <code>n8n-rag</code> (o un nome a tua scelta)</li>
+                                    <li><strong>Dimensions:</strong> <code>768</code>
+                                        <br><em style="color: #856404;">⚠️ CRITICO: Deve essere 768 per Gemini Embeddings!</em>
+                                    </li>
+                                    <li><strong>Metric:</strong> <code>cosine</code> (consigliato per similarità testuale)</li>
+                                    <li><strong>Cloud Provider:</strong> Scegli quello che preferisci (es. AWS, GCP)</li>
+                                    <li><strong>Region:</strong> Scegli la regione più vicina a te</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <strong>Clicca su "Create Index":</strong> Pinecone impiegherà qualche minuto per creare l'indice
+                            <br><em style="color: #636e72; font-size: 0.9em;">Vedrai lo stato "Initializing" che diventerà "Ready" quando è pronto</em>
+                        </li>
+                    </ol>
+
+                    <div class="tip-box" style="margin-top: 1.5rem;">
+                        <strong>💡 Perché dimensione 768?</strong><br>
+                        Google Gemini Embeddings genera vettori di dimensione 768. La dimensione dell'indice Pinecone
+                        deve corrispondere ESATTAMENTE alla dimensione dei vettori generati dal modello di embedding!
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Checklist finale per Pinecone:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>✅ Account Pinecone creato e loggato</li>
+                            <li>✅ API Key creata e salvata</li>
+                            <li>✅ API Key configurata in N8N</li>
+                            <li>✅ Indice <code>n8n-rag</code> creato con dimensione <strong>768</strong></li>
+                            <li>✅ Indice in stato "Ready"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>Step 1.3: Inserimento del Documento Vettorizzato</h3>
+                    <ol>
+                        <li>
+                            <strong>Configura Pinecone su N8N:</strong> Nel nodo <span class="highlight">Pinecone Vector Store</span>,
+                            seleziona l'indice appena creato (es. <code>n8n-rag</code>).
+                        </li>
+                        <li>
+                            <strong>Modello di Embedding Cruciale:</strong> Aggiungi il nodo
+                            <span class="highlight">Embeddings Google Gemini</span> e collegalo al nodo Pinecone Vector Store
+                            tramite la connessione <code>ai_embedding</code>.
+                            <br><em style="color: #636e72; font-size: 0.9em; margin-top: 0.5rem; display: block;">
+                                Questo deve essere lo stesso modello configurato quando hai creato l'indice su Pinecone (dimensione 768).
+                            </em>
+                        </li>
+                        <li>
+                            <strong>Definisci il Tipo di Dati:</strong> Vai nelle impostazioni del documento, assicurati che
+                            <code>document</code> sia impostato su <code>default data</code>. Il <code>Type of Data</code> deve
+                            essere impostato su <strong>Binary</strong> (binario), poiché i file scaricati da Google Drive sono
+                            in formato binario.
+                        </li>
+                    </ol>
+                    <div class="tip-box">
+                        <strong>💡 Verifica:</strong> Assicurati che il modello di embedding in N8N corrisponda ESATTAMENTE
+                        a quello configurato nell'indice Pinecone, altrimenti il RAG non funzionerà!
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>Step 1.4: Esecuzione della Fase di Ingestion</h3>
+                    <ol>
+                        <li>
+                            <strong>Esegui il Workflow:</strong> Clicca su <strong>Execute Workflow</strong>. N8N scaricherà
+                            il documento, lo spezzetterà in chunks (pezzi), trasformerà ogni pezzo in un vettore (numero)
+                            tramite l'embedding, e lo salverà nel database vettoriale Pinecone.
+                        </li>
+                        <li>
+                            <strong>Verifica (Opzionale):</strong> Puoi verificare su Pinecone che i tuoi documenti siano
+                            stati spezzettati (ad esempio, in nove pezzetti) e salvati correttamente.
+                        </li>
+                    </ol>
+                    <div class="success-box">
+                        <strong>✅ Completato!</strong> La Fase 1 è completata. I tuoi documenti sono ora salvati nel
+                        database vettoriale e pronti per essere interrogati.
+                    </div>
+                </div>
+
+                <div class="step" style="background: #f8f9fa; border: 2px dashed #667eea;">
+                    <h3>📦 Import Rapido: JSON del Workflow</h3>
+                    <p>
+                        Puoi velocizzare la creazione del workflow importando direttamente questo JSON in N8N.
+                        Copia il codice qui sotto e in N8N vai su <strong>Menu → Import from File → Paste JSON</strong>.
+                    </p>
+                    <div style="position: relative;">
+                        <button onclick="copyWorkflowJSON()" style="position: absolute; top: 10px; right: 10px; padding: 0.5rem 1rem; background: #ea4b71; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                            📋 Copia JSON
+                        </button>
+                        <pre id="workflow-json" style="background: #2d2d2d; color: #f8f8f2; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin-top: 3rem; max-height: 400px; overflow-y: auto;"><code>{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "TUO_GOOGLE_DOCS_URL_QUI",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [208, 0],
+      "name": "Download file"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-new",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [416, 0],
+      "name": "Pinecone Vector Store"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [272, 224],
+      "name": "Embeddings Google Gemini"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [512, 224],
+      "name": "Default Data Loader"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [[{"node": "Download file", "type": "main", "index": 0}]]
+    },
+    "Download file": {
+      "main": [[{"node": "Pinecone Vector Store", "type": "main", "index": 0}]]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [[{"node": "Pinecone Vector Store", "type": "ai_embedding", "index": 0}]]
+    },
+    "Default Data Loader": {
+      "ai_document": [[{"node": "Pinecone Vector Store", "type": "ai_document", "index": 0}]]
+    }
+  }
+}</code></pre>
+                    </div>
+                    <div class="warning-box" style="margin-top: 1rem;">
+                        <strong>⚠️ Nota:</strong> Dopo l'import, dovrai:
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Configurare le tue credenziali (Google Drive, Pinecone, Gemini)</li>
+                            <li>Sostituire <code>TUO_GOOGLE_DOCS_URL_QUI</code> con l'URL del tuo Google Docs</li>
+                            <li>Creare l'indice Pinecone <code>n8n-rag-new</code> con dimensione <strong>768</strong></li>
+                            <li><strong>IMPORTANTE:</strong> Usa Google Docs invece di PDF, e converti le tabelle in liste di testo!</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FASE 2 -->
+            <section id="rag-fase2" class="content-section">
+                <h2>💬 FASE 2: Interrogazione e Generazione della Risposta</h2>
+                <p class="phase-description">
+                    Questa fase riguarda la costruzione dell'interfaccia di chat e l'utilizzo del database vettoriale
+                    come strumento per la LLM.
+                </p>
+
+                <div class="step">
+                    <h3>Step 2.1: Impostazione del Trigger Chat</h3>
+                    <ol>
+                        <li>
+                            <strong>Aggiungi un nuovo Workflow (o nodo):</strong> Aggiungi un <span class="highlight">Chat Trigger</span>
+                            per poter interrogare l'agente tramite chat.
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="step">
+                    <h3>Step 2.2: Configurazione dell'Agente AI</h3>
+                    <ol>
+                        <li>
+                            <strong>Aggiungi il Nodo AI Agent:</strong> Aggiungi il nodo <span class="highlight">AI Agent</span>.
+                        </li>
+                        <li>
+                            <strong>Prompt e Persona:</strong> Definisci un Prompt che specifichi il ruolo dell'agente
+                            (es. "Sei un agente che risponde alla domanda dell'utente in maniera professionale riguardo Martes AI").
+                        </li>
+                        <li>
+                            <strong>Input:</strong> Imposta l'input per prendere il messaggio dell'utente: <code>jason.input.input</code>.
+                        </li>
+                        <li>
+                            <strong>Modello LLM:</strong> Aggiungi il modello <span class="highlight">Google Gemini</span> (Chat Model).
+                            <br><em style="color: #636e72; font-size: 0.9em; margin-top: 0.5rem; display: block;">
+                                Soluzione completamente gratuita! Dovrai configurare le credenziali di Google Gemini API.
+                            </em>
+                        </li>
+                        <li>
+                            <strong>Memoria (Memory):</strong> Aggiungi una memoria (come una memoria semplice che ricorda gli
+                            ultimi cinque messaggi). Per un uso in produzione, sarebbe consigliato usare una memoria più robusta come SQL.
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="step">
+                    <h3>Step 2.3: Aggiungere il Tool RAG (Pinecone)</h3>
+                    <p>Il database vettoriale deve essere fornito all'agente come uno <strong>strumento</strong>.</p>
+                    <ol>
+                        <li>
+                            <strong>Aggiungi il Tool:</strong> Come <code>Tool</code> (Strumento) a cui l'agente avrà accesso,
+                            aggiungi nuovamente il nodo <span class="highlight">Pinecone Vector Store</span>.
+                        </li>
+                        <li>
+                            <strong>Descrizione:</strong> Fornisci una descrizione chiara del tool
+                            (es. "recupera le informazioni riguardanti le domande che fa l'utente").
+                        </li>
+                        <li>
+                            <strong>Indice e Limite:</strong> Seleziona l'indice che hai creato (es. <code>n8n-rag</code>) e imposta il limite
+                            di chunks da recuperare (ad esempio, 4).
+                        </li>
+                        <li>
+                            <strong>Verifica del Modello di Embedding:</strong> <strong class="critical">Questo è il passo più cruciale!</strong>
+                            <br><br>
+                            Aggiungi nuovamente il nodo <span class="highlight">Embeddings Google Gemini</span> e collegalo
+                            al Pinecone Vector Store tramite la connessione <code>ai_embedding</code>.
+                            <br><br>
+                            <strong>Deve essere lo stesso modello utilizzato in Fase 1!</strong>
+                            <br>
+                            <em style="color: #d63031; font-size: 0.95em;">
+                                Se si utilizzasse un modello diverso qui, la teoria di base del RAG e l'intero processo di ricerca
+                                per similarità non funzionerebbe più.
+                            </em>
+                        </li>
+                    </ol>
+                    <div class="warning-box">
+                        <strong>⚠️ CRITICO:</strong> Il modello di embedding deve essere identico in tutti e tre i punti:
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li><strong>Creazione indice Pinecone (Step 1.2):</strong> Dimensione 768</li>
+                            <li><strong>Inserimento documenti in N8N (Step 1.3):</strong> Embeddings Google Gemini</li>
+                            <li><strong>Interrogazione tramite tool (Step 2.3):</strong> Embeddings Google Gemini (questo step)</li>
+                        </ol>
+                        <br>
+                        <strong style="color: #00b894;">✅ Configurazione corretta:</strong>
+                        <div style="background: rgba(0, 184, 148, 0.1); padding: 0.75rem; margin-top: 0.5rem; border-radius: 5px;">
+                            Indice Pinecone (dimensione 768) + Gemini Embeddings in N8N = RAG funzionante!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>Step 2.4: Test e Funzionamento</h3>
+                    <ol>
+                        <li>
+                            <strong>Testa l'Agente:</strong> Interroga l'agente tramite il chat trigger
+                            (es. "chi è Martes AI e che servizi offre").
+                        </li>
+                        <li>
+                            <strong>Funzionamento Sottostante:</strong> L'agente eseguirà i seguenti passaggi in background:
+                            <ul>
+                                <li>La domanda viene trasformata in un vettore</li>
+                                <li>Il vettore viene posizionato nel database vettoriale</li>
+                                <li>Vengono recuperati i quattro pezzi di documento più vicini (ricerca per similarità)</li>
+                                <li>Questi pezzi vengono usati come contesto per la LLM</li>
+                                <li>La LLM genera la risposta finale</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <div class="success-box">
+                        <strong>✅ Congratulazioni!</strong> Il tuo agente RAG è ora funzionante e può rispondere alle
+                        domande basandosi sui tuoi documenti!
+                    </div>
+                </div>
+
+                <div class="step" style="background: #f8f9fa; border: 2px dashed #667eea; margin-top: 2rem;">
+                    <h3>📦 Import Rapido: JSON del Workflow Fase 2</h3>
+                    <p>
+                        Anche per la Fase 2 puoi importare direttamente questo JSON in N8N.
+                        Copia il codice qui sotto e in N8N vai su <strong>Menu → Import from File → Paste JSON</strong>.
+                    </p>
+                    <div style="position: relative;">
+                        <button onclick="copyWorkflowJSON2()" style="position: absolute; top: 10px; right: 10px; padding: 0.5rem 1rem; background: #ea4b71; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                            📋 Copia JSON
+                        </button>
+                        <pre id="workflow-json-fase2" style="background: #2d2d2d; color: #f8f8f2; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin-top: 3rem; max-height: 400px; overflow-y: auto;"><code>{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [1120, 48],
+      "name": "When chat message received"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Sei un assistente per le policy di rimborso di AlpinaTech.\n\nHAI UN TOOL chiamato \"KnowledgeBase\". CHIAMALO SEMPRE prima di rispondere.\n\nREGOLA FONDAMENTALE:\nUsa SOLO i dati restituiti dal tool. NON inventare, NON usare esempi precedenti.\n\nQuando il tool ti restituisce dati tipo:\n\"BOLOGNA: Alloggio €130 per notte, Pasti €36 al giorno\"\n\nRispondi esattamente con quei valori.\n\nFormato: [Risposta diretta] [Fonte: ANN-A]\n\nEsempio:\nQ: \"massimale pasti Bologna?\"\nA: \"€36 al giorno [Fonte: ANN-A]\"\n\nRispondi in italiano, tono professionale e conciso.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [1328, 48],
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-exp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [1280, 288],
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [1408, 288],
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Cerca informazioni rilevanti nei documenti aziendali riguardanti policy di trasferta, massimali pasti e alloggio, per-diem e rimborsi spese. Usa questo tool quando l'utente fa domande su limiti di spesa, città specifiche, o regole di rimborso.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-rag-new",
+          "mode": "list"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [1664, 240],
+      "name": "KnowledgeBase"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [1584, 432],
+      "name": "Embeddings Google Gemini"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [[{"node": "AI Agent", "type": "main", "index": 0}]]
+    },
+    "AI Agent": {},
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [[{"node": "AI Agent", "type": "ai_languageModel", "index": 0}]]
+    },
+    "Simple Memory": {
+      "ai_memory": [[{"node": "AI Agent", "type": "ai_memory", "index": 0}]]
+    },
+    "KnowledgeBase": {
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [[{"node": "KnowledgeBase", "type": "ai_embedding", "index": 0}]]
+    }
+  }
+}</code></pre>
+                    </div>
+                    <div class="warning-box" style="margin-top: 1rem;">
+                        <strong>⚠️ Nota:</strong> Dopo l'import, dovrai:
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Configurare le tue credenziali (Google Gemini, Pinecone)</li>
+                            <li>Verificare che l'indice Pinecone sia <code>n8n-rag-new</code> (lo stesso della Fase 1!)</li>
+                            <li>Il modello Gemini può essere cambiato in base alle tue preferenze (2.0-flash-exp o 2.5-pro)</li>
+                            <li><strong>Top K è impostato a 10</strong> per recuperare più chunks</li>
+                        </ul>
+                    </div>
+                    <div class="tip-box" style="margin-top: 1rem;">
+                        <strong>💡 Nota sul Prompt:</strong> Il prompt è stato ottimizzato per evitare che l'agente confonda
+                        i valori tra diverse città. Dice esplicitamente di usare SOLO i dati del tool e di non inventare!
+                    </div>
+                </div>
+            </section>
+
+            <!-- Riuso con altra documentazione -->
+            <section id="rag-riuso" class="content-section">
+                <h2>♻️ Riutilizzare il RAG con Altra Documentazione</h2>
+                <p class="section-intro">
+                    Vuoi usare questo stesso RAG agent per documentazione tecnica, FAQ prodotto, knowledge base aziendale o altro?
+                    Ecco cosa devi cambiare e cosa può rimanere identico.
+                </p>
+
+                <div class="info-box" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); color: white; border: none;">
+                    <h3 style="color: white; margin-top: 0;">🎯 La buona notizia: la struttura rimane uguale!</h3>
+                    <p style="color: white;">
+                        I workflow di Fase 1 e Fase 2 funzionano per QUALSIASI tipo di documentazione.
+                        Devi solo adattare il <strong>prompt</strong> e la <strong>tool description</strong> al nuovo contesto.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <h3>✅ Cosa NON devi cambiare</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>✅ Struttura dei workflow (Fase 1 e Fase 2)</li>
+                        <li>✅ Indice Pinecone (può essere lo stesso o uno nuovo)</li>
+                        <li>✅ Embeddings Google Gemini (dimensione 768)</li>
+                        <li>✅ Configurazione dei nodi (Google Drive, Vector Store, ecc.)</li>
+                        <li>✅ Top K e parametri tecnici</li>
+                    </ul>
+                    <div class="success-box" style="margin-top: 1rem;">
+                        <strong>💡 In pratica:</strong> Cambi solo il documento Google Docs e il prompt!
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>🔄 Cosa devi cambiare</h3>
+
+                    <h4 style="margin-top: 1.5rem; color: #6c5ce7;">1. Il documento su Google Drive</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Crea un nuovo Google Docs con la tua documentazione</li>
+                        <li><strong>Ricorda:</strong> Converti le tabelle in liste di testo!</li>
+                        <li>Nel workflow Fase 1, seleziona il nuovo documento</li>
+                    </ul>
+
+                    <h4 style="margin-top: 1.5rem; color: #6c5ce7;">2. Il prompt dell'AI Agent (Fase 2)</h4>
+                    <p>Nel nodo <strong>"AI Agent"</strong>, adatta queste parti del prompt:</p>
+
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong style="color: #d63031;">❌ Prompt attuale (policy rimborso):</strong>
+                        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>Sei un assistente per le policy di rimborso di AlpinaTech.
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool. NON inventare, NON usare esempi precedenti.
+
+Quando il tool ti restituisce dati tipo:
+"BOLOGNA: Alloggio €130 per notte, Pasti €36 al giorno"
+
+Rispondi esattamente con quei valori.
+
+Formato: [Risposta diretta] [Fonte: ANN-A]
+
+Esempio:
+Q: "massimale pasti Bologna?"
+A: "€36 al giorno [Fonte: ANN-A]"
+
+Rispondi in italiano, tono professionale e conciso.</code></pre>
+                    </div>
+
+                    <h5 style="margin-top: 1.5rem;">📋 Esempi di adattamento per altri usi:</h5>
+
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong style="color: #1976d2;">✅ Manuale tecnico prodotto:</strong>
+                        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>Sei un assistente tecnico specializzato nella documentazione del prodotto XYZ.
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool. NON inventare, NON usare conoscenza esterna.
+
+Formato: [Risposta tecnica] [Fonte: Capitolo/Sezione]
+
+Esempio:
+Q: "Come si configura il parametro timeout?"
+A: "Il parametro timeout si imposta nel file config.yaml, valore predefinito 30 secondi [Fonte: Cap3-Configurazione]"
+
+Rispondi in italiano, tono tecnico e preciso.</code></pre>
+                    </div>
+
+                    <div style="background: #e8f5e9; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong style="color: #2e7d32;">✅ FAQ e supporto clienti:</strong>
+                        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>Sei un assistente di supporto che aiuta i clienti con domande sul prodotto ABC.
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool. NON inventare soluzioni.
+
+Formato: [Risposta chiara] [Fonte: FAQ/KB]
+
+Esempio:
+Q: "Come resetto la password?"
+A: "Vai su Impostazioni > Account > Reset Password, poi segui il link ricevuto via email [Fonte: FAQ-003]"
+
+Rispondi in italiano, tono amichevole ma professionale.</code></pre>
+                    </div>
+
+                    <div style="background: #fff9e6; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong style="color: #f57c00;">✅ Knowledge base aziendale:</strong>
+                        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>Sei un assistente per la knowledge base interna di Azienda XYZ.
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool relativi a procedure, policy e processi aziendali.
+
+Formato: [Risposta operativa] [Fonte: Processo/Policy]
+
+Esempio:
+Q: "Come si approva una richiesta di ferie?"
+A: "Le ferie si approvano tramite portale HR > Richieste > Approva. Il manager ha 3 giorni lavorativi [Fonte: Proc-HR-05]"
+
+Rispondi in italiano, tono professionale.</code></pre>
+                    </div>
+
+                    <h4 style="margin-top: 2rem; color: #6c5ce7;">3. La Tool Description (nel nodo KnowledgeBase)</h4>
+                    <p>Adatta la descrizione del tool al nuovo contesto:</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead style="background: #f8f9fa;">
+                            <tr>
+                                <th style="padding: 0.75rem; border: 1px solid #e1e8ed; text-align: left;">Caso d'uso</th>
+                                <th style="padding: 0.75rem; border: 1px solid #e1e8ed; text-align: left;">Tool Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;"><strong>Policy rimborso</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;">
+                                    <code style="font-size: 0.85em;">Cerca info su massimali, rimborsi, trasferte e policy aziendali</code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;"><strong>Manuale tecnico</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;">
+                                    <code style="font-size: 0.85em;">Cerca info tecniche, configurazioni, troubleshooting e specifiche del prodotto</code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;"><strong>FAQ prodotto</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;">
+                                    <code style="font-size: 0.85em;">Cerca risposte a domande frequenti, guide e soluzioni comuni</code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;"><strong>KB aziendale</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid #e1e8ed;">
+                                    <code style="font-size: 0.85em;">Cerca procedure, policy, processi e linee guida aziendali</code>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; border: none;">
+                    <h3 style="color: white; margin-top: 0;">🚀 Procedura Completa per Cambiare Documentazione</h3>
+                    <ol style="color: white; margin-left: 1.5rem;">
+                        <li><strong>Prepara il nuovo documento:</strong>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Crea Google Docs con la nuova documentazione</li>
+                                <li>Converti tabelle in liste di testo</li>
+                                <li>Carica su Google Drive</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 1rem;"><strong>Decidi se usare nuovo indice o sovrascrivere:</strong>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li><strong>Nuovo indice:</strong> Crea <code>prodotto-xyz-kb</code> su Pinecone (per tenere più knowledge base separate)</li>
+                                <li><strong>Stesso indice:</strong> Elimina vecchi vettori e ricarica (per sostituire completamente)</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 1rem;"><strong>Aggiorna Fase 1:</strong>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Cambia file Google Drive</li>
+                                <li>Cambia indice Pinecone (se hai creato uno nuovo)</li>
+                                <li>Esegui workflow</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 1rem;"><strong>Aggiorna Fase 2:</strong>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Modifica prompt AI Agent (usa template sopra)</li>
+                                <li>Modifica Tool Description</li>
+                                <li>Cambia indice Pinecone (se hai creato uno nuovo)</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 1rem;"><strong>Testa con domande specifiche del nuovo dominio!</strong></li>
+                    </ol>
+                </div>
+
+                <div class="tip-box" style="margin-top: 2rem;">
+                    <h4 style="margin-top: 0;">💡 Template Prompt Universale</h4>
+                    <p>Usa questo template come base per qualsiasi tipo di documentazione:</p>
+                    <pre style="background: #f8f9fa; color: #2d3436; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>Sei un assistente [DESCRIVI IL RUOLO/CONTESTO].
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool. NON inventare, NON usare conoscenza esterna.
+
+Formato: [Risposta diretta] [Fonte: ...]
+
+Rispondi in italiano, tono [professionale/tecnico/amichevole] e conciso.</code></pre>
+                    <p style="margin-top: 1rem; margin-bottom: 0;">
+                        Sostituisci <code>[DESCRIVI IL RUOLO/CONTESTO]</code> con il tuo caso specifico, e sei pronto! 🎯
+                    </p>
+                </div>
+            </section>
+
+            <!-- Produzione -->
+            <section id="rag-produzione" class="content-section">
+                <h2>🚀 Configurazione per la Produzione</h2>
+                <p class="section-intro">
+                    Per evitare di dover aggiornare manualmente i documenti ogni volta, è possibile modificare il trigger iniziale
+                    per automatizzare l'intero processo.
+                </p>
+
+                <div class="step">
+                    <h3>Aggiornamento Automatico dei Documenti</h3>
+                    <ol>
+                        <li>
+                            Sostituisci il <strong>Manual Trigger</strong> (o il Trigger Chat se stai usando un workflow separato
+                            per l'ingestion) con un <span class="highlight">Google Drive Trigger</span>.
+                        </li>
+                        <li>
+                            Configura il Google Drive Trigger su una <strong>specifica cartella</strong>.
+                        </li>
+                        <li>
+                            In questo modo, ogni volta che un nuovo documento viene caricato in quella cartella, il workflow di
+                            ingestion si attiverà automaticamente, scaricando il file, spezzettandolo e salvando le nuove
+                            informazioni nel database vettoriale, aggiornando così continuamente la conoscenza dell'agente.
+                        </li>
+                    </ol>
+                    <div class="info-box">
+                        <strong>📌 Nota:</strong> Questo approccio ti permette di avere un agente sempre aggiornato,
+                        senza intervento manuale. Perfetto per ambienti di produzione dove i documenti cambiano frequentemente.
+                    </div>
+                </div>
+
+                <div class="best-practices">
+                    <h3>Best Practices per la Produzione</h3>
+                    <ul>
+                        <li>Usa una memoria SQL invece della memoria semplice per conversazioni più robuste</li>
+                        <li>Monitora i costi delle API (OpenAI e Pinecone)</li>
+                        <li>Imposta limiti di rate per evitare abusi</li>
+                        <li>Implementa logging per tracciare le conversazioni</li>
+                        <li>Considera l'uso di modelli di embedding più grandi per dataset complessi</li>
+                        <li>Testa regolarmente la qualità delle risposte</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="rag-troubleshooting" class="content-section">
+                <h2>🔧 Troubleshooting e Risoluzione Problemi</h2>
+                <p class="section-intro">
+                    Guida completa alla risoluzione dei problemi più comuni quando l'agente RAG non risponde correttamente.
+                </p>
+
+                <!-- Problema 1: Agente risponde valori sbagliati -->
+                <div class="step" style="border-left: 4px solid #d63031;">
+                    <h3>❌ Problema #1: L'agente risponde con valori sbagliati o confusi</h3>
+                    <div class="warning-box">
+                        <strong>Sintomo:</strong> Chiedi "massimale pasti a Bologna?" e risponde "€40" invece di "€36",
+                        oppure risponde sempre con gli stessi valori indipendentemente dalla città richiesta.
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; color: #d63031;">Causa Principale: Tabelle nei PDF non leggibili dall'LLM</h4>
+                    <p>
+                        Quando carichi un PDF con tabelle, il Default Data Loader le converte in un formato tipo:
+                    </p>
+                    <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 5px; font-size: 0.85em;"><code>Città
+Alloggio €/notte
+Pasti €/giorno
+Milano
+160
+40
+Bologna
+130
+36</code></pre>
+                    <p style="margin-top: 1rem;">
+                        Questo formato confonde l'LLM che non capisce quale numero appartiene a quale città.
+                    </p>
+
+                    <h4 style="margin-top: 2rem; color: #00b894;">✅ Soluzione: Converti le tabelle in formato testo</h4>
+
+                    <div class="info-box" style="background: #e8f8f5; border-color: #00b894;">
+                        <strong>PASSAGGI COMPLETI PER RISOLVERE:</strong>
+
+                        <h5 style="margin-top: 1rem; margin-bottom: 0.5rem;">Step 1: Crea un nuovo Google Docs</h5>
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Crea un nuovo <strong>Google Docs</strong> (NON PDF - Google Docs viene processato meglio!)</li>
+                            <li>Copia tutto il contenuto del tuo documento originale</li>
+                        </ol>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 2: Converti le tabelle in liste</h5>
+                        <p style="margin: 0.5rem 0;">Quando arrivi alla sezione con la tabella dei massimali, <strong>ELIMINA la tabella</strong> e sostituiscila con:</p>
+                        <pre style="background: rgba(0, 184, 148, 0.1); color: #2d3436; padding: 1rem; border-radius: 5px; margin-top: 0.5rem; font-size: 0.85em;"><code>[ANN-A] Massimali per città
+
+MILANO: Alloggio €160 per notte, Pasti €40 al giorno
+ROMA: Alloggio €150 per notte, Pasti €38 al giorno
+TORINO: Alloggio €120 per notte, Pasti €35 al giorno
+BOLOGNA: Alloggio €130 per notte, Pasti €36 al giorno
+NAPOLI: Alloggio €110 per notte, Pasti €34 al giorno
+PARIGI: Alloggio €220 per notte, Pasti €45 al giorno
+BERLINO: Alloggio €180 per notte, Pasti €42 al giorno
+
+Nota: i massimali esteri sono indicativi e soggetti a revisione TRV/FIN.</code></pre>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 3: Crea un nuovo indice Pinecone</h5>
+                        <p style="margin: 0.5rem 0;">Invece di cancellare 100+ vettori manualmente:</p>
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Su Pinecone → <strong>"Create Index"</strong></li>
+                            <li>Nome: <code>n8n-rag-new</code> (o un nome a tua scelta)</li>
+                            <li><strong>Dimensions: 768</strong> (CRITICO!)</li>
+                            <li>Metric: <code>cosine</code></li>
+                            <li>Clicca "Create Index"</li>
+                        </ol>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 4: Aggiorna il workflow Fase 1</h5>
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Apri il workflow di <strong>Fase 1 (Ingestion)</strong></li>
+                            <li>Nel nodo <strong>"Download file"</strong>: seleziona il nuovo Google Docs</li>
+                            <li>Nel nodo <strong>"Pinecone Vector Store"</strong>: cambia indice al nuovo (es. <code>n8n-rag-new</code>)</li>
+                            <li>Salva e <strong>Execute workflow</strong></li>
+                            <li>Verifica che tutti i nodi diventino verdi ✅</li>
+                        </ol>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 5: Aggiorna il workflow Fase 2</h5>
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Apri il workflow di <strong>Fase 2 (Query)</strong></li>
+                            <li>Nel nodo <strong>"KnowledgeBase"</strong> (Pinecone Vector Store): cambia indice al nuovo</li>
+                            <li>Salva</li>
+                            <li><strong>Clear execution</strong> per pulire la memoria</li>
+                        </ol>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 6: Verifica su Pinecone</h5>
+                        <ol style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>Vai su Pinecone → nuovo indice</li>
+                            <li>Verifica che ci siano vettori (es. 8-15)</li>
+                            <li>Vai su <strong>"Query"</strong> → cerca "Bologna"</li>
+                            <li>Verifica che il chunk contenga: <code>"BOLOGNA: Alloggio €130 per notte, Pasti €36 al giorno"</code></li>
+                        </ol>
+
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Step 7: Testa!</h5>
+                        <p style="margin: 0.5rem 0;">Fai domande specifiche:</p>
+                        <ul style="margin: 0.5rem 0 0 1.5rem;">
+                            <li>"Qual è il massimale pasti a Bologna?" → Dovrebbe rispondere <strong>€36/giorno</strong></li>
+                            <li>"Qual è il massimale pasti a Napoli?" → Dovrebbe rispondere <strong>€34/giorno</strong></li>
+                            <li>"Qual è il massimale pasti a Roma?" → Dovrebbe rispondere <strong>€38/giorno</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Problema 2: Agente non trova informazioni -->
+                <div class="step" style="border-left: 4px solid #fdcb6e;">
+                    <h3>⚠️ Problema #2: L'agente non trova le informazioni</h3>
+                    <div class="warning-box" style="background: #fff9e6; border-color: #fdcb6e;">
+                        <strong>Sintomo:</strong> L'agente risponde "Non ho trovato informazioni" anche se i dati sono nel documento.
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; color: #856404;">Possibili Cause e Soluzioni:</h4>
+
+                    <h5 style="margin-top: 1rem;">Causa 1: Fase 1 non eseguita</h5>
+                    <p><strong>Verifica:</strong> Vai su Pinecone → indice → controlla <code>Total vectors</code></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Se è <strong>0</strong> → Devi eseguire il workflow di Fase 1!</li>
+                        <li>Se è <strong>> 0</strong> → Il problema è altrove, continua sotto</li>
+                    </ul>
+
+                    <h5 style="margin-top: 1.5rem;">Causa 2: Tool non viene chiamato</h5>
+                    <p><strong>Verifica:</strong> Nei log dell'AI Agent, vedi che chiama "KnowledgeBase"?</p>
+                    <p><strong>Soluzione:</strong> Migliora la Tool Description. Nel nodo "KnowledgeBase", usa una descrizione chiara:</p>
+                    <pre style="background: #fff9e6; color: #2d3436; padding: 1rem; border-radius: 5px; font-size: 0.85em;"><code>Cerca informazioni sui massimali di spesa, rimborsi, trasferte e policy aziendali. Usa SEMPRE questo tool per rispondere a domande su limiti di spesa, città specifiche, procedure di rimborso o regole.</code></pre>
+
+                    <h5 style="margin-top: 1.5rem;">Causa 3: Modello di embedding diverso</h5>
+                    <p>
+                        <strong style="color: #d63031;">CRITICO:</strong> Il modello di embedding deve essere <strong>identico</strong> in tutti e tre i punti:
+                    </p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Pinecone indice:</strong> dimensione <code>768</code></li>
+                        <li><strong>Fase 1 - Inserimento:</strong> Embeddings Google Gemini</li>
+                        <li><strong>Fase 2 - Tool Query:</strong> Embeddings Google Gemini</li>
+                    </ol>
+
+                    <h5 style="margin-top: 1.5rem;">Causa 4: Top K troppo basso</h5>
+                    <p>Nel nodo "KnowledgeBase" (Fase 2), vai in <strong>Options</strong> e imposta:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Top K:</strong> <code>8</code> o <code>10</code> (numero di chunks da recuperare)</li>
+                    </ul>
+                </div>
+
+                <!-- Problema 3: Agente risponde in JSON -->
+                <div class="step" style="border-left: 4px solid #74b9ff;">
+                    <h3>💬 Problema #3: L'agente risponde in formato JSON invece di testo</h3>
+                    <div class="info-box" style="background: #e3f2fd; border-color: #74b9ff;">
+                        <strong>Sintomo:</strong> L'agente risponde con <code>{"answer":"...","evidence":[...],"confidence":"high"}</code>
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; color: #1976d2;">Causa: Prompt chiede esplicitamente il formato JSON</h4>
+                    <p>Se nel prompt dell'AI Agent hai istruzioni tipo "Formato output: usa il seguente JSON", l'agente seguirà quelle istruzioni.</p>
+
+                    <h4 style="margin-top: 1.5rem; color: #00b894;">✅ Soluzione: Prompt per risposte in testo leggibile</h4>
+                    <p>Nel nodo <strong>"AI Agent"</strong>, sostituisci il prompt con:</p>
+                    <pre style="background: #e3f2fd; color: #2d3436; padding: 1rem; border-radius: 5px; font-size: 0.85em;"><code>Sei un assistente per le policy di rimborso di AlpinaTech.
+
+HAI UN TOOL chiamato "KnowledgeBase". CHIAMALO SEMPRE prima di rispondere.
+
+REGOLA FONDAMENTALE:
+Usa SOLO i dati restituiti dal tool. NON inventare, NON usare esempi precedenti.
+
+Quando il tool ti restituisce dati tipo:
+"BOLOGNA: Alloggio €130 per notte, Pasti €36 al giorno"
+
+Rispondi esattamente con quei valori.
+
+Formato: [Risposta diretta] [Fonte: ANN-A]
+
+Esempio:
+Q: "massimale pasti Bologna?"
+A: "€36 al giorno [Fonte: ANN-A]"
+
+Rispondi in italiano, tono professionale e conciso.</code></pre>
+                </div>
+
+                <!-- Problema 4: Memory confonde le risposte -->
+                <div class="step" style="border-left: 4px solid #a29bfe;">
+                    <h3>🧠 Problema #4: L'agente risponde sempre con la stessa città</h3>
+                    <div class="warning-box" style="background: #f0e5ff; border-color: #a29bfe;">
+                        <strong>Sintomo:</strong> Chiedi di Bologna ma continua a rispondere su Milano (città della domanda precedente).
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; color: #6c5ce7;">Causa: La memoria ricorda le domande precedenti</h4>
+                    <p>La "Simple Memory" memorizza le conversazioni precedenti e può confondere l'agente.</p>
+
+                    <h4 style="margin-top: 1.5rem; color: #00b894;">✅ Soluzione Immediata:</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Clicca su <strong>"Clear execution"</strong> nel workflow</li>
+                        <li>Oppure apri una <strong>nuova sessione chat</strong></li>
+                        <li>Riprova la domanda</li>
+                    </ul>
+
+                    <h4 style="margin-top: 1.5rem; color: #00b894;">✅ Soluzione Definitiva: Migliora il prompt</h4>
+                    <p>Aggiungi questa riga nel prompt dell'AI Agent:</p>
+                    <pre style="background: #f0e5ff; color: #2d3436; padding: 1rem; border-radius: 5px; font-size: 0.85em;"><code>IMPORTANTE: Ogni domanda è INDIPENDENTE. Rispondi SOLO con i dati recuperati dal tool per la domanda CORRENTE. NON usare esempi o informazioni di domande precedenti.</code></pre>
+                </div>
+
+                <!-- Checklist finale -->
+                <div class="success-box" style="margin-top: 2rem;">
+                    <h3 style="margin-top: 0;">✅ Checklist per verificare che tutto funzioni</h3>
+                    <ol style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>✅ Su Pinecone, l'indice ha vettori (Total vectors > 0)</li>
+                        <li>✅ I chunks su Pinecone contengono testo in formato lista (es. "BOLOGNA: €36")</li>
+                        <li>✅ Il documento su Google Drive è un Google Docs (non PDF) con liste invece di tabelle</li>
+                        <li>✅ Fase 1 e Fase 2 usano lo <strong>stesso indice Pinecone</strong></li>
+                        <li>✅ Fase 1 e Fase 2 usano lo <strong>stesso modello di embedding</strong> (Gemini, dim. 768)</li>
+                        <li>✅ Il tool "KnowledgeBase" ha una descrizione chiara</li>
+                        <li>✅ Il prompt dell'AI Agent è minimalista e dice di usare SOLO i dati del tool</li>
+                        <li>✅ Top K è impostato a 8-10 nel nodo KnowledgeBase</li>
+                    </ol>
+                </div>
+
+                <!-- Test finale -->
+                <div class="step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; border: none;">
+                    <h3 style="color: white; margin-top: 0;">🎯 Test Finale: Verifica che tutto funzioni</h3>
+                    <p style="color: white;">Fai queste domande e verifica le risposte:</p>
+                    <table style="width: 100%; margin-top: 1rem; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
+                        <thead style="background: rgba(0,0,0,0.2);">
+                            <tr>
+                                <th style="padding: 0.75rem; text-align: left; color: white;">Domanda</th>
+                                <th style="padding: 0.75rem; text-align: left; color: white;">Risposta Attesa</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: white;">
+                            <tr>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);">"Massimale pasti a Milano?"</td>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);"><strong>€40 al giorno</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);">"Massimale pasti a Roma?"</td>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);"><strong>€38 al giorno</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);">"Massimale pasti a Bologna?"</td>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);"><strong>€36 al giorno</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);">"Massimale pasti a Napoli?"</td>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);"><strong>€34 al giorno</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);">"Posso farmi rimborsare il minibar?"</td>
+                                <td style="padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2);"><strong>No, non rimborsabile</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="color: white; margin-top: 1rem; margin-bottom: 0;">
+                        Se tutte le risposte sono corrette, <strong>congratulazioni</strong>! Il tuo RAG funziona perfettamente! 🎉
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
