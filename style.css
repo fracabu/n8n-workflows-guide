@@ -165,6 +165,7 @@ body {
 
 .nav-item-dropdown.open .nav-dropdown-menu {
     max-height: 500px;
+    display: block !important;
 }
 
 .nav-link {
@@ -195,6 +196,7 @@ body {
     font-size: 0.875rem;
     padding: 0.625rem 1.5rem 0.625rem 2.5rem;
     font-weight: 500;
+    display: block !important;
 }
 
 /* Main Content */

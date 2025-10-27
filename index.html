@@ -1170,6 +1170,293 @@ Rispondi in italiano, tono professionale e conciso.</code></pre>
                     </p>
                 </div>
             </section>
+
+            <!-- OpenRouter AI - Connessione -->
+            <section id="openrouter-connessione" class="content-section">
+                <div class="section-header">
+                    <h2>🔗 Parte 1: Connessione di OpenRouter agli Agenti AI di n8n</h2>
+                    <span class="difficulty-badge intermediate">Intermedio</span>
+                </div>
+                
+                <p class="section-intro">
+                    OpenRouter funge da unico punto di accesso per oltre 500 modelli di IA (LLM). Questo elimina la necessità di creare chiavi API e aggiungere crediti per ogni singolo modello (come Claude, OpenAI, Groq, Gemini).
+                </p>
+
+                <div class="step">
+                    <h3>1. Creazione dell'Account e della Chiave API</h3>
+                    
+                    <h4>1. Accedi a OpenRouter</h4>
+                    <p>Vai su <a href="https://openrouter.ai" target="_blank" style="color: var(--primary-color);">openrouter.ai</a>.</p>
+                    
+                    <h4>2. Crea un Account</h4>
+                    <p>Il primo passo è creare un account.</p>
+                    
+                    <h4>3. Genera la Chiave API</h4>
+                    <p>Una volta effettuato l'accesso, vai su <strong>Profile</strong> e poi su <strong>Keys</strong>. A differenza di altri servizi, dovrai creare una sola chiave API per accedere a tutti i modelli.</p>
+                    
+                    <h4>4. Copia la Chiave</h4>
+                    <p>Press <strong>"Create"</strong> e copia la chiave generata.</p>
+                </div>
+
+                <div class="step">
+                    <h3>2. Configurazione in n8n</h3>
+                    
+                    <h4>1. Aggiungi OpenRouter come Credenziale</h4>
+                    <p>Vai al nodo n8n <strong>Chat Model</strong> e cerca <strong>OpenRouter</strong>.</p>
+                    
+                    <h4>2. Crea la Credenziale</h4>
+                    <p>Crea una nuova credenziale, incolla la chiave API appena copiata e nominala (ad esempio, "all models").</p>
+                </div>
+
+                <div class="step">
+                    <h3>3. Aggiunta dei Crediti</h3>
+                    
+                    <h4>1. Aggiungi Crediti</h4>
+                    <p>L'utilizzo dei modelli non è gratuito. Il passaggio successivo è aggiungere crediti al tuo account OpenRouter (tramite <strong>Profile -> Credits</strong>).</p>
+                    
+                    <h4>2. Vantaggio</h4>
+                    <p>Questo permette di gestire i fondi per tutti gli LLM in un unico posto, semplificando la gestione, soprattutto quando si utilizzano più modelli per diverse funzioni (ad esempio, uno per la scrittura di contenuti, uno per la strutturazione dei dati, uno per il ragionamento).</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Risultato Finale</h3>
+                    <p>A questo punto, avrai accesso a tutti i modelli disponibili (come Perplexity, Claude, Groq, OpenAI) all'interno di n8n tramite l'API di OpenRouter.</p>
+                </div>
+            </section>
+
+            <!-- OpenRouter AI - Configurazione -->
+            <section id="openrouter-configurazione" class="content-section">
+                <div class="section-header">
+                    <h2>⚙️ Parte 2: Costruire un Agente AI che Sceglie Dinamicamente il Modello</h2>
+                    <span class="difficulty-badge intermediate">Intermedio</span>
+                </div>
+                
+                <p class="section-intro">
+                    L'obiettivo è creare un processo a due passaggi in n8n in cui il primo agente decide quale modello utilizzare e il secondo agente utilizza quel modello per rispondere alla domanda.
+                </p>
+
+                    <div class="step">
+                        <h3>4. Il Primo Agente: LLM Router (Decision Maker)</h3>
+                        
+                        <p>Questo agente ha il compito di analizzare la domanda dell'utente e decidere quale LLM è più adatto, restituendo il nome del modello in un formato specifico.</p>
+                        
+                        <h4>1. Configura il Primo Agente</h4>
+                        <p>Aggiungi un nodo <strong>Agente AI</strong> (chiamato ad esempio "llm router") e mantieni l'input standard (ad esempio, chat input).</p>
+                        
+                        <h4>2. Definisci le Istruzioni (Prompt)</h4>
+                        <p>Utilizza l'opzione <strong>System Message expression</strong> per inserire le istruzioni dettagliate (il prompt).</p>
+                        
+                        <h4>3. Contesto e Compito</h4>
+                        <p>Il prompt deve istruire l'agente a essere un "AI agent that decides an LLM model" e a restituire il nome del modello in base alla domanda fornita.</p>
+                        
+                        <div class="warning-box">
+                            <h3>📋 Prompt di Sistema per il Router</h3>
+                            <pre><code>You are an AI agent that decides which LLM model to use based on the user's question.
+
+Analyze the user's request and choose the most appropriate model from these options:
+
+- "anthropic/claude-3.5-sonnet" - For complex reasoning, analysis, coding
+- "openai/gpt-4o" - For creative writing, general tasks, content creation  
+- "groq/llama-3.1-70b-versatile" - For quick responses, simple questions
+- "perplexity/llama-3.1-sonar-small-128k-online" - For real-time information, current events
+
+Return ONLY the model name in JSON format:
+{"model": "model_name_here"}</code></pre>
+                        </div>
+                        
+                        <h4>4. Fornisci il Contesto sui Modelli</h4>
+                        <p>Devi fornire all'agente il contesto su quali modelli sono disponibili e per cosa sono bravi, utilizzando i nomi API specifici:</p>
+                        
+                        <div class="info-box">
+                            <h3>📚 Catalogo Modelli e Specializzazioni</h3>
+                            <ul>
+                                <li><strong>perplexity/llama-3.1-sonar-small-128k-online</strong> - Buono per "extended reasoning" e ricerca</li>
+                                <li><strong>openai/gpt-4o-mini</strong> - "cost-efficient" per task generali</li>
+                                <li><strong>anthropic/claude-3.5-sonnet</strong> - Eccellente per scrivere codice Python e analisi complesse</li>
+                                <li><strong>groq/llama-3.1-70b-versatile</strong> - Velocità elevata per risposte rapide</li>
+                                <li><strong>openai/gpt-4o</strong> - Bilanciato per creatività e ragionamento</li>
+                            </ul>
+                        </div>
+                        
+                        <h4>5. Definisci il Formato di Output Obbligatorio (JSON)</h4>
+                        <p>L'agente deve rispondere solo nel formato JSON specificato.</p>
+                        
+                        <h4>6. Utilizza l'Output Parser</h4>
+                        <p>Abilita l'opzione <strong>Require specific output format</strong>. Usa il <strong>Structured output parser</strong> e definisci lo schema JSON:</p>
+                        
+                        <div class="warning-box">
+                            <h3>🔧 Schema JSON per Output Parser</h3>
+                            <pre><code>{
+  "type": "object",
+  "properties": {
+    "user_query": {
+      "type": "string",
+      "description": "La domanda originale dell'utente"
+    },
+    "model": {
+      "type": "string", 
+      "description": "Il nome del modello scelto dall'elenco disponibile"
+    }
+  },
+  "required": ["user_query", "model"]
+}</code></pre>
+                        </div>
+                        
+                        <div class="tip-box">
+                            <h3>💡 Vantaggi dell'Output Parser</h3>
+                            <p>L'uso dello Structured Output Parser garantisce che:</p>
+                            <ul>
+                                <li>L'output sia sempre in formato JSON valido</li>
+                                <li>I campi richiesti siano sempre presenti</li>
+                                <li>Il modello scelto sia uno di quelli disponibili</li>
+                                <li>Il workflow successivo possa fare riferimento affidabile ai dati</li>
+                            </ul>
+                        </div>
+                        <h4>7. Esempi (Few-shot learning)</h4>
+                        <p>Includi esempi nel prompt per aiutare l'IA a capire il mapping corretto:</p>
+                        
+                        <div class="info-box">
+                            <h3>🎯 Esempi di Mapping per il Router</h3>
+                            <pre><code>Esempi:
+- "Qual è il prezzo delle azioni Tesla?" → perplexity/llama-3.1-sonar-small-128k-online
+- "Scrivi una funzione Python per ordinare una lista" → anthropic/claude-3.5-sonnet  
+- "Splica il concetto di fotosintesi in modo semplice" → openai/gpt-4o-mini
+- "Riassumi questo articolo in 3 punti" → groq/llama-3.1-70b-versatile
+- "Aiutami a scrivere una email professionale" → openai/gpt-4o</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h3>5. Il Secondo Agente: L'Agente di Risposta (The Answerer)</h3>
+                        
+                        <p>Questo agente prende il nome del modello scelto dal primo agente e lo usa per rispondere alla domanda dell'utente.</p>
+                        
+                        <h4>1. Input</h4>
+                        <p>L'input di questo secondo agente non sarà direttamente il trigger iniziale, ma sarà la <strong>user query</strong> estratta dal JSON generato dal primo agente.</p>
+                        
+                        <h4>2. Imposta il Modello Dinamico</h4>
+                        <p>Nel nodo n8n <strong>Chat Model</strong> (OpenRouter), non selezionare un modello fisso. Invece:</p>
+                        
+                        <ol>
+                            <li>Vai su <strong>expression</strong></li>
+                            <li>Usa il riferimento dinamico al modello scelto dal router</li>
+                        </ol>
+                        
+                        <div class="warning-box">
+                            <h3>⚙️ Configurazione Modello Dinamico</h3>
+                            <p>Nel campo Model del secondo agente, inserisci:</p>
+                            <pre><code>{{ $json.model }}</code></pre>
+                            <p>Questo farà riferimento al campo "model" dell'output JSON del router.</p>
+                        </div>
+                        
+                        <h4>3. Passaggio della Domanda</h4>
+                        <p>Assicurati che la domanda originale dell'utente venga passata correttamente:</p>
+                        <pre><code>{{ $json.user_query }}</code></pre>
+                        
+                        <h4>Popola l'espressione con il valore della proprietà model</h4>
+                        <p>che proviene dall'output JSON del primo agente. Questo permette al modello di cambiare dinamicamente ad ogni esecuzione.</p>
+                        
+                        <h4>3. Esecuzione</h4>
+                        <p>Quando l'automazione viene eseguita:</p>
+                        
+                        <div class="workflow-overview">
+                            <h3>Flusso di Esecuzione Dettagliato</h3>
+                            <div class="phases">
+                                <div class="phase">
+                                    <div class="phase-number">1</div>
+                                    <h4>Input Utente</h4>
+                                    <p>"Can you generate code for snake game"</p>
+                                </div>
+                                <div class="phase-arrow">→</div>
+                                <div class="phase">
+                                    <div class="phase-number">2</div>
+                                    <h4>LLM Router</h4>
+                                    <p>Analizza e sceglie: anthropic/claude-3.5-sonnet</p>
+                                </div>
+                                <div class="phase-arrow">→</div>
+                                <div class="phase">
+                                    <div class="phase-number">3</div>
+                                    <h4>Answerer</h4>
+                                    <p>Usa Claude 3.5 Sonnet per generare il codice</p>
+                                </div>
+                                <div class="phase-arrow">→</div>
+                                <div class="phase">
+                                    <div class="phase-number">4</div>
+                                    <h4>Output</h4>
+                                    <p>Codice Python completo del gioco</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box">
+                            <h3>✅ Vantaggi del Sistema</h3>
+                            <p>In sintesi, l'intero processo permette di scegliere quale modello utilizzare in base all'input fornito, sfruttando la capacità di OpenRouter di accedere a tutti gli LLM con un'unica chiave API.</p>
+                            
+                            <ul>
+                                <li><strong>Ottimizzazione Automatica</strong> - Il sistema sceglie sempre il modello migliore</li>
+                                <li><strong>Riduzione Costi</strong> - Usa modelli economici per task semplici</li>
+                                <li><strong>Massima Performance</strong> - Modelli specializzati per ogni compito</li>
+                                <li><strong>Manutenzione Semplice</strong> - Un'unica chiave API per tutti i modelli</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                <div class="workflow-overview">
+                    <h3>Flusso Completo del Routing Dinamico</h3>
+                    <div class="phases">
+                        <div class="phase">
+                            <div class="phase-number">1</div>
+                            <h4>Richiesta Utente</h4>
+                            <p>Input dell'utente</p>
+                        </div>
+                        <div class="phase-arrow">→</div>
+                        <div class="phase">
+                            <div class="phase-number">2</div>
+                            <h4>LLM Router</h4>
+                            <p>Analizza e sceglie il modello</p>
+                        </div>
+                        <div class="phase-arrow">→</div>
+                        <div class="phase">
+                            <div class="phase-number">3</div>
+                            <h4>Esecutore</h4>
+                            <p>Usa il modello selezionato</p>
+                        </div>
+                        <div class="phase-arrow">→</div>
+                        <div class="phase">
+                            <div class="phase-number">4</div>
+                            <h4>Risposta</h4>
+                            <p>Output ottimizzato</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Vantaggi del Sistema</h3>
+                    <ul>
+                        <li><strong>Ottimizzazione dei Costi</strong> - Usa il modello più economico per ogni compito</li>
+                        <li><strong>Performance Migliori</strong> - Seleziona il modello più veloce per risposte rapide</li>
+                        <li><strong>Qualità Superiore</strong> - Sceglie il modello migliore per ogni tipo di richiesta</li>
+                        <li><strong>Scalabilità</strong> - Facilmente estendibile con nuovi modelli</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- OpenRouter AI - Avanzate -->
+            <section id="openrouter-advanced" class="content-section">
+                <div class="section-header">
+                    <h2>🎯 Parte 3: Tecniche Avanzate e Best Practices</h2>
+                    <span class="difficulty-badge intermediate">Intermedio</span>
+                </div>
+                
+                <p class="section-intro">
+                    Tecniche avanzate per massimizzare l'efficienza e le performance dei tuoi agenti AI con OpenRouter.
+                </p>
+
+                <div class="info-box">
+                    <h3>🚀 Prossimamente</h3>
+                    <p>Questa sezione è in fase di sviluppo. Torneremo presto con contenuti dettagliati sulle tecniche avanzate.</p>
+                </div>
+            </section>
         </main>
     </div>
 
