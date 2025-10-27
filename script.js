@@ -3,6 +3,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     const contentSections = document.querySelectorAll('.content-section');
     const searchInput = document.getElementById('searchInput');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    // Mobile menu toggle
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            sidebar.classList.toggle('active');
+        });
+    }
+
+    // Dropdown functionality
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const parent = this.closest('.nav-item-dropdown');
+            const wasOpen = parent.classList.contains('open');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.nav-item-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('open');
+            });
+            
+            // Toggle current dropdown
+            if (!wasOpen) {
+                parent.classList.add('open');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item-dropdown').forEach(dropdown => {
+            dropdown.classList.remove('open');
+        });
+    });
 
     // Handle navigation
     navLinks.forEach(link => {
@@ -10,6 +48,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetSection = this.getAttribute('data-section');
             navigateToSection(targetSection);
+            
+            // Close mobile menu after navigation
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
         });
     });
 

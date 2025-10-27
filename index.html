@@ -7,9 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+<div class="container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1>N8N Workflows</h1>
                 <p>Guide Complete</p>
@@ -17,21 +24,18 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="#intro" class="nav-link active" data-section="intro">Introduzione</a></li>
-                    <li><a href="#rag-agent" class="nav-link" data-section="rag-agent">Agente RAG</a></li>
-                    <li class="submenu">
-                        <a href="#rag-fase1" class="nav-link sub" data-section="rag-fase1">Fase 1: Ingestion</a>
-                    </li>
-                    <li class="submenu">
-                        <a href="#rag-fase2" class="nav-link sub" data-section="rag-fase2">Fase 2: Query</a>
-                    </li>
-                    <li class="submenu">
-                        <a href="#rag-riuso" class="nav-link sub" data-section="rag-riuso">Riuso/Altra Doc</a>
-                    </li>
-                    <li class="submenu">
-                        <a href="#rag-produzione" class="nav-link sub" data-section="rag-produzione">Produzione</a>
-                    </li>
-                    <li class="submenu">
-                        <a href="#rag-troubleshooting" class="nav-link sub" data-section="rag-troubleshooting">Troubleshooting</a>
+                    <li class="nav-item-dropdown">
+                        <a href="#rag-agent" class="nav-link nav-dropdown-toggle" data-section="rag-agent">
+                            Agente RAG
+                            <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <ul class="nav-dropdown-menu">
+                            <li><a href="#rag-fase1" class="nav-link sub" data-section="rag-fase1">Fase 1: Ingestion</a></li>
+                            <li><a href="#rag-fase2" class="nav-link sub" data-section="rag-fase2">Fase 2: Query</a></li>
+                            <li><a href="#rag-riuso" class="nav-link sub" data-section="rag-riuso">Riuso/Altra Doc</a></li>
+                            <li><a href="#rag-produzione" class="nav-link sub" data-section="rag-produzione">Produzione</a></li>
+                            <li><a href="#rag-troubleshooting" class="nav-link sub" data-section="rag-troubleshooting">Troubleshooting</a></li>
+                        </ul>
                     </li>
                 </ul>
             </nav>

@@ -30,6 +30,18 @@ Imparerai a costruire un **Agente RAG (Retrieval Augmented Generation)** che:
 - **Pinecone Free Tier** - Database vettoriale gratuito (fino a 100k vettori)
 - **Google Drive** - Storage documenti
 
+## 📦 Documento di Esempio
+
+Nella cartella `examples/` trovi:
+- **esempio-documento-rag.docx**: Il documento Word usato come esempio nella guida
+  - Policy di rimborso spese e trasferte fittizie
+  - Tabelle di massimali già convertite in formato lista
+  - Perfetto per testare il tuo primo RAG agent!
+
+**📌 Nota:** Ricorda di convertire il Word in Google Docs e caricarlo su Google Drive prima di usarlo in N8N.
+
+---
+
 ## 🚀 Come iniziare
 
 ### 1. Apri la guida web
@@ -94,10 +106,13 @@ Nella guida troverai un **JSON pronto all'uso** per importare il workflow dirett
 
 ```
 n8n-workflows-guide/
-├── index.html      # Pagina principale con tutta la guida
-├── style.css       # Stili e tema
-├── script.js       # Interattività e funzionalità
-└── README.md       # Questo file
+├── examples/
+│   └── esempio-documento-rag.docx  # Documento di esempio per testare il RAG
+├── index.html                       # Pagina principale con tutta la guida
+├── style.css                        # Stili e tema N8N
+├── script.js                        # Interattività e funzionalità
+├── CLAUDE.md                        # Guida per Claude Code
+└── README.md                        # Questo file
 ```
 
 ## 🔑 Configurazione chiavi API
